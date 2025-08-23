@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  password      String? // Diperbarui: password dijadikan opsional
+  name          String?
+  image         String?
+  role          Role       @default(USER)
+  emailVerified DateTime?  @map("email_verified")
+  accounts      Account[]
+  sessions      Session[]
+  favorites     Favorite[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Product {
+  id            String         @id @default(cuid())
+  name          String
+  description   String
+  price         Int
+  slug          String         @unique
+  categoryId    String
+  category      Category       @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  discountPrice Int?
+  images        ProductImage[]
+  rating        Float          @default(0)
+  reviews       Review[]
+  isPublished   Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  favorites     Favorite[]
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  publicId  String  @unique
+  order     Int
+
+  @@index([productId])
+}
+
+model Review {
+  id        String        @id @default(cuid())
+  rating    Float         @default(0)
+  comment   String
+  images    ReviewImage[]
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+model ReviewImage {
+  id       String @id @default(cuid())
+  url      String
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String
+  publicId String @unique
+
+  @@index([reviewId])
+}
+
+model Banner {
+  id           String        @id @default(uuid())
+  description  String
+  bannerImages BannerImage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model BannerImage {
+  id        String   @id @default(uuid())
+  url       String
+  publicId  String   @unique
+  altText   String?
+  bannerId  String
+  banner    Banner   @relation(fields: [bannerId], references: [id], onDelete: Cascade) // <--- PASTIKAN INI ADA
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  products  Product[] @relation("CategoryToProduct")
+  createdAt DateTime  @default(now())
+}
