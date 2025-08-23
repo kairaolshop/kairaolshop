@@ -45,7 +45,7 @@ export default async function HomePage() {
             Produk Pilihan untuk Gaya Kekinian
           </h2>
           <Suspense fallback={<p className="text-center text-gray-500">Memuat koleksi terbaru...</p>}>
-            <div className="mx-auto border rounded-sm p-2 max-w-5xl">
+            <div className="bg-orange-50 mx-auto border rounded-sm p-2 max-w-5xl">
             <ProductSection />
             </div>
             <Separator className="mt-8"/>
