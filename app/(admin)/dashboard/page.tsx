@@ -29,10 +29,8 @@ export default async function ProductsPage() {
   }));
 
   return (
-    <div className="p-6 max-w-7xl mx-auto border rounded-sm shadow mt-20">
-      <h1 className="text-2xl font-bold mb-4">Dashboard Admin Panel</h1>
-      
-      <MainNav className="mx-6 mb-8"/>
+    <div className="p-6 max-w-7xl mx-auto border rounded-sm shadow mt-4">
+      <h1 className="text-2xl font-bold mb-4">Dashboard Admin Panel</h1>      
       <Separator className="border-b mb-4"/>
       <ProductClient data={formatted} />
     </div>

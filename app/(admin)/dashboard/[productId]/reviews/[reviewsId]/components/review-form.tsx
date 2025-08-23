@@ -459,9 +459,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ initialData, productId }) => {
                 <span>{action}</span>
               )}
             </Button>
-             <Link href="/dashboard" target="blank" className="ml-4 text-blue-500">
-                Kembali ke Dashboard
-              </Link>
+             
           </form>
         </Form>
       </CardContent>     

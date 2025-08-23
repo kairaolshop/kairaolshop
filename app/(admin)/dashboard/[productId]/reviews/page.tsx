@@ -23,7 +23,7 @@ const ReviewsPage = async ({ params }: ReviewsPageProps) => {
   });
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-7xl border mt-4 rounded-sm mx-auto">
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <Heading

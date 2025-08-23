@@ -51,7 +51,7 @@ const EditReviewPage = async ({ params }: EditReviewPageProps) => {
   }; 
 
   return (
-     <div className="max-w-6xl mx-auto">
+     <div className="max-w-6xl mx-auto border rounded-sm ">
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <Heading

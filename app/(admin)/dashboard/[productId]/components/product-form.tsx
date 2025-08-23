@@ -246,7 +246,7 @@ const onSubmit = async (data: ProductFormValues) => {
 
   return (
     <>
-    <div className='mx-auto max-w-4xl'>
+    <div className='mx-auto max-w-7xl rounded-sm border p-6'>
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
