@@ -45,7 +45,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const onTogglePublish = async (productId:string, isPublished: boolean )=>
   {try {
     setLoading(true);
-    await axios.patch(`api/products/${productId}/publish/[id]`,{isPublished: !isPublished});
+    await axios.patch(`api/products/${productId}/publish`,{isPublished: !isPublished});
     router.refresh();
     toast.success(`Produk berhasil ${isPublished ? 'Disembunyikan': 'Ditampilkan'}`);
   } catch(err){
@@ -82,7 +82,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             Ubah
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            <Trash className="mr-2 h-4 w-4" />
+            <Trash className="mr-2 h-4 w-4 bg-red-500 text-white rounded-sm" />
             Delete
           </DropdownMenuItem>
            <DropdownMenuItem onClick={()=> onTogglePublish(data.id, data.isPublished)} className="cursor-pointer" >

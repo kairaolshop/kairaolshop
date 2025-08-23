@@ -46,10 +46,10 @@ export default function ProductList({
           <Button
             variant="outline"
             onClick={onLoadMore}
-            className="px-2 py-1  hover:bg-black text-black border-gray-400 hover:text-white transition-colors"
+            className="px-2 py-1 hover:bg-black text-black border-gray-400 hover:text-white transition-colors"
             disabled={isLoading}
           >
-            {isLoading ? "Memuat..." : "Produk Lainnya"}
+            {isLoading ? "Memuat..." : "Tampilkan lebih banyak"}
           </Button>
         </div>
       )}

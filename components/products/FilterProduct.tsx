@@ -10,6 +10,7 @@ import { getFavorites } from "@/lib/actions/get-favorits";
 interface Category {
   id: string;
   name: string;
+  slug: string;
 }
 
 interface FilteredProductDisplayProps {
@@ -53,7 +54,7 @@ export default function FilteredProductDisplay({
     setIsLoading(true);
 
     const querySkip = isNewFilter ? 0 : skip;
-    const categoryQuery = newCategory || selectedCategory === "all" ? undefined : selectedCategory;
+    const categoryParam = (newCategory || selectedCategory) === "all" ? undefined : selectedCategory;
 
     try {
         const newProducts = await getProducts({
@@ -62,7 +63,7 @@ export default function FilteredProductDisplay({
             excludeSlug: excludeSlug,
             orderBy: "createdAt",
             orderDirection: "desc",
-            category: categoryQuery,
+            category: categoryParam,
         });
 
         if (isNewFilter) {

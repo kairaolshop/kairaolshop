@@ -10,6 +10,9 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useState } from "react";
 
+export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+
 interface ReviewImage {
   id: string;
   url: string;

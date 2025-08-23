@@ -9,6 +9,9 @@ import ProductCard from "@/components/products/productCard";
 import { getCategory } from "@/lib/actions/getCategory";
 import Header from "@/components/public/Header";
 
+export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+
 const FavoritesPage = async () => {
   const session = await getAuthSession(); 
   const categories = await getCategory();

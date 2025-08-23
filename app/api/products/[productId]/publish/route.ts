@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 interface Context {
-  params: Promise<{ productId: string }>;
+  params:Promise<{ productId: string }>;
 }
 
-export async function PATCH(req: NextRequest, { params }: Context) {
-  const { productId } = await params;
+export async function PATCH(req: NextRequest, context: Context) {
+  const { productId } =await context.params;
   const { isPublished }: { isPublished: boolean } = await req.json();
 
   if (!productId || typeof isPublished !== 'boolean') {

@@ -9,15 +9,16 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import { Menu, Heart, ChevronDown, LayoutDashboard } from "lucide-react";
+import { Menu, Heart, ChevronDown, LayoutDashboard, Loader2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { signOut } from "next-auth/react";
 import { Session } from "next-auth";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { DialogTitle } from "@radix-ui/react-dialog"; 
+import { Description, DialogTitle } from "@radix-ui/react-dialog"; 
 import { ChartBarStacked } from 'lucide-react';
 import Image from "next/image";
+import { useState } from "react";
 
 interface Category {
   id: string;
@@ -31,10 +32,13 @@ interface HeaderProps {
 }
 
 export default function Header({ categories, session }: HeaderProps) {
+  const [loadingSlug, setLoadingSlug] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isLoggedIn = !!session;
   const role = session?.user?.role || "GUEST"; // Default role menjadi GUEST jika tidak ada sesi
-
+  const handleCategoryClick = (slug: string) => {
+    setLoadingSlug(slug);
+  };
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
   <div className="px-4 flex-row max-w-7xl mx-auto flex h-14 items-center justify-between">
@@ -91,8 +95,13 @@ export default function Header({ categories, session }: HeaderProps) {
             <DropdownMenuContent align="start">
               {categories.map((category) => (
                 <DropdownMenuItem key={category.id} asChild>
-                  <Link href={`/category/${category.slug}`}>
-                    {category.name}
+                  <Link href={`/category/${category.slug}`}
+                  onClick={() => handleCategoryClick(category.slug)}>
+                    {loadingSlug === category.slug ? (
+                      <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                    ) : (
+                      category.name
+                    )}
                   </Link>
                 </DropdownMenuItem>
               ))}
@@ -113,14 +122,15 @@ export default function Header({ categories, session }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right">
                 <VisuallyHidden>
-                  <DialogTitle>Menu</DialogTitle>
+                  <DialogTitle>Lubna Fashion</DialogTitle>
+                  <Description>Menu Navigasi</Description>
                 </VisuallyHidden>
-                <nav className="flex flex-col gap-4 pt-6">
+                <nav className="flex flex-col gap-2 pt-6">
                   <Link
                     href="/"
-                    className="text-lg font-medium hover:text-primary transition-colors"
+                    className="border-b ml-2 text-lg font-medium hover:text-primary transition-colors"
                   >
-                    Home
+                    Lubna Fashion
                   </Link>
                   {role === "USER" && (
                     <Link
@@ -132,7 +142,7 @@ export default function Header({ categories, session }: HeaderProps) {
                   )}
                   {role === "ADMIN" && (
                     <Link
-                      href="/dasboard"
+                      href="/dashboard"
                       className="ml-2 text-lg flex items-center font-medium hover:text-primary transition-colors"
                     >
                       <LayoutDashboard className="mr-2 text-blue-500"/> Dashboard
@@ -145,9 +155,11 @@ export default function Header({ categories, session }: HeaderProps) {
                     <Link
                       key={category.id}
                       href={`/category/${category.slug}`}
+                      onClick={() => handleCategoryClick(category.slug)}
                       className="ml-10 text-base hover:text-primary transition-colors"
-                    >
-                      {category.name}
+                    >{loadingSlug === category.slug ? (
+                      <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                    ):(category.name)}                     
                     </Link>
                   ))}
                 </nav>

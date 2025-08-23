@@ -59,6 +59,7 @@ const ProductCard: React.FC<ProductCardProps> = ({data, isInitialFavorite, userR
                 </div>
                 <h3 className="text-sm md:text-base lg:text-lg px-2 mt-1 font-semibold text-start text-gray-900 dark:text-gray-100 line-clamp-1 hover:text-green-600 transition-colors duration-200">
                     {data.name}
+                    <p>{data.category? data.category.name: 'Uncategorized'}</p>
                 </h3>
                 <div className="flex items-center px-2 gap-0 mt-1">
                     {Array.from({ length: 5 }).map((_, i) => (
@@ -85,7 +86,14 @@ const ProductCard: React.FC<ProductCardProps> = ({data, isInitialFavorite, userR
                 <span className="text-red-600 md:text-lg font-bold">
                     <Currency value={data.discountPrice} />
                 </span>
+                
             </div>
+            <div className="ml-auto" onClick={handleFavoriteClick}>
+                <FavoriteButton
+                productId={data.id}
+                isInitialFavorite={isInitialFavorite}
+                userRole={userRole as "USER" || "ADMIN" || "GUEST"}/>
+                </div>
         </div>
     )
 }

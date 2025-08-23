@@ -8,6 +8,7 @@ export type ReviewImage = Prisma.ReviewImageGetPayload<{}>;
 
 export type Review = Prisma.ReviewGetPayload<{
   include: { images: true };
+  
 }>;
 
 export type ProductWithDetails = Prisma.ProductGetPayload<{
@@ -28,6 +29,7 @@ export type ProductTransformed = Omit<ProductWithDetails, 'createdAt'> & {
   createdAt: string;
   slug: string;
   avgRating: number;
+  category?: { id: string; name: string } | null;
 };
 export const getProducts = cache(
   async (options?: {
@@ -116,6 +118,7 @@ export const getProductBySlug = cache(
           },
           reviews: {
             include: { images: true },
+            take: 4,
           },
         },
       });

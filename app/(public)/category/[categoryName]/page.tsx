@@ -62,7 +62,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <h1 className="text-lg  md:text-2xl font-bold text-center mb-8">
           Produk Kategori &quot;{currentCategory?.name || "Tidak Ditemukan"}&quot;
         </h1>
-        <div className="grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="grid-cols-2 grid md:grid-cols-3 lg:grid-cols-4 gap-2">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}

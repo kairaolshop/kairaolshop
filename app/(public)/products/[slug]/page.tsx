@@ -12,8 +12,11 @@ import { CountdownTimer } from "@/components/ui/TimerDown";
 import { SiteFooter } from "@/components/public/Footer";
 import StickyHeader from "@/components/products/StickyHeader";
 import HeaderTetap from "@/components/products/HeaderTetap";
+import GallerySkeleton from "@/components/gallery/GallerySkeleton";
+import ProductInfoSkeleton from "@/components/gallery/InfoSkeleton";
 
 export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 interface DetailProductPageProps {
   params:Promise< { slug: string }>;
@@ -23,9 +26,12 @@ export default async function DetailProductPage({ params }: DetailProductPagePro
   
   return (
     <>
+     <HeaderTetap/>
+     <Container>
       <Suspense fallback={<div className="p-6 text-center">Memuat produk...</div>}>
         <DetailProductContent slug={slug} />
       </Suspense>
+      </Container>
       <SiteFooter/>
     </>
   );
@@ -54,13 +60,17 @@ ${productUrl}`;
       whatsappMessage={whatsappMessage}/>
       </div>
     <div className="bg-white">
-       <HeaderTetap/>
+      
       <Container>      
         <div className="py-0 md:py-10">      
             <div className="overflow-hidden  grid grid-cols-1 items-start md:grid-cols-2 gap-x-8">
-              <Gallery images={product.images}/>
+              <Suspense fallback={<GallerySkeleton />}>
+                    <Gallery images={product.images} />
+                </Suspense>
                 <div className="mt-2 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+                  <Suspense fallback={<ProductInfoSkeleton/>}>
                   <ProductInfo product={product} />
+                  </Suspense>
                 </div>
             </div>
         </div>
@@ -111,7 +121,7 @@ ${productUrl}`;
         <section className="border-l-1 border-r-1 border-b-1 bg-[radial-gradient(circle,_#FFF5E1,_#FAF9F6)] bg-background-alt-1 rounded-b-lg mb-4">
         <div className="flex items-center px-2 justify-between py-4">
               <hr className="w-20 md:w-60 border-t border-gray-400"/>
-              <span className="text-sm md:text-2xl text-black font-bold select-none">
+              <span className="text-sm sm:text-xl text-black font-bold select-none">
                 kamu mungkin juga suka
               </span>
               <hr className="w-20 md:w-60  border-t border-gray-400"/>

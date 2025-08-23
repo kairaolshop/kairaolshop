@@ -6,6 +6,9 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { FaWhatsapp } from "react-icons/fa";
 import { rP } from "@/lib/utils";
 
+export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+
 interface ProductInfoProps {
   product: ProductTransformed;
 }
