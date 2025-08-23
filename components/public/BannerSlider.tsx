@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Navigation, Pagination } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 
 import { BannerWithImagesTransformed } from "@/lib/actions/get-Banner";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -24,9 +24,10 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ banners }) => {
   return (
     <div className="px-0 relative w-full h-[300px] md:h-[400px] md:mt-4 overflow-hidden">
       <Swiper
-        modules={[Pagination, Navigation]}
+        modules={[Pagination, Navigation, Autoplay]}
         spaceBetween={0}
         slidesPerView={1}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation={{
           prevEl: ".swiper-button-prev-custom",
