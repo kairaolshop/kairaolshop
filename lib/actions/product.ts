@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 "use server";
 import { cache } from "react";
 import prisma from "@/lib/prisma";
