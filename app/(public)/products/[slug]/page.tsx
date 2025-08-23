@@ -26,14 +26,13 @@ export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
 interface DetailProductPageProps {
-  params: { slug: string };
+  params:Promise< { slug: string }>;
 }
 
 // Komponen utama halaman
-export default async function DetailProductPage({
-  params,
+export default async function DetailProductPage({params,
 }: DetailProductPageProps) {
-  const { slug } = params;
+  const { slug } =await params;
 
   return (
     <>
