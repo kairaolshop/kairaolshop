@@ -10,7 +10,10 @@ interface GalleryTabProps {
   isFirstImage: boolean; // Tambahkan prop ini
 }
 
+
 const GalleryTab: React.FC<GalleryTabProps> = ({ images, isFirstImage }) => {
+  const PlaceholderImg = "/product-img-placeholder.svg";
+  const altText = images.url ? "Thumbnail produk" : PlaceholderImg;
   return (
     <Tab className="relative flex aspect-square min-w-[90px] sm:min-w-[100px] lg:min-w-[110px] cursor-pointer items-center justify-center bg-white">
       {({ selected }) => (
@@ -19,8 +22,8 @@ const GalleryTab: React.FC<GalleryTabProps> = ({ images, isFirstImage }) => {
           <span className="absolute inset-0 overflow-hidden rounded-md">
             <Image
               fill
-              src={images.url}
-              alt={'Thumbnail produk'}
+              src={images.url || PlaceholderImg}
+              alt={altText || 'Thumbnail produk'}
               sizes="(max-width: 640px) 90px, 110px"
               className="object-cover"
               priority={isFirstImage}

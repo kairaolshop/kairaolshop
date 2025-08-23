@@ -40,6 +40,8 @@ export default function ReviewSlider({ reviews }: ReviewSliderProps) {
     setCurrentImageIndex(imageIndex);
     setZoomOpen(true);
   };
+  const PlaceholderImg = "/product-img-placeholder.svg";
+  const altText = allReviewImages.length > 0 ? "Gambar review produk" : PlaceholderImg;
 
   return (
     <div className="px-0 relative w-full h-auto overflow-hidden">
@@ -81,7 +83,7 @@ export default function ReviewSlider({ reviews }: ReviewSliderProps) {
                 onClick={() => handleImageClick(allReviewImages.findIndex((img) => img.id === review.images[0].id))}
               >
                 <Image
-                  src={review.images[0].url}
+                  src={review.images[0].url || PlaceholderImg}
                   alt={`Review Image for ${review.comment.substring(0, 20)}...`}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"

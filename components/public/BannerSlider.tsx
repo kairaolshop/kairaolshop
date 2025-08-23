@@ -20,6 +20,8 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ banners }) => {
   if (!banners || banners.length === 0) {
     return null;
   }
+  const PlaceholderImg = "/placeholder-banner.jpg";
+  const alttext = banners.length > 0 ? "Gambar banner promosi" : PlaceholderImg;
 
   return (
     <div className="px-0 relative w-full h-[300px] md:h-[400px] md:mt-4 overflow-hidden">
@@ -43,8 +45,8 @@ const BannerSlider: React.FC<BannerSliderProps> = ({ banners }) => {
             <SwiperSlide key={banner.id}>
               <div className="relative w-full h-full">
                 <Image
-                  src={imageUrl}
-                  alt={altText}
+                  src={imageUrl || PlaceholderImg}
+                  alt={alttext || 'Gambar banner promosi'}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"                 
                   className=" object-cover md:object-contain object-center transition-transform duration-300"

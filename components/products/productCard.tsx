@@ -26,6 +26,8 @@ const ProductCard: React.FC<ProductCardProps> = ({data, isInitialFavorite, userR
     const handleFavoriteClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
+    const PlaceholderImg = "/product-img-placeholder.svg";
+    const altText = data.images && data.images.length > 0 ? "Gambar product" : PlaceholderImg;
 
     return (
         <div 
@@ -37,8 +39,8 @@ const ProductCard: React.FC<ProductCardProps> = ({data, isInitialFavorite, userR
             <div onClick={handleProductClick} className="flex-grow cursor-pointer relative">
                 <div className="aspect-square bg-gray-100 relative w-full overflow-hidden">
                     <Image
-                        alt="Gambar product"
-                        src={data?.images?.[0].url}
+                        alt={altText || 'Gambar product'}
+                        src={data?.images?.[0].url || PlaceholderImg}
                         fill                        
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"

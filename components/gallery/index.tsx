@@ -23,6 +23,8 @@ const Gallery: React.FC<GalleryProps> = ({ images }) => {
     setActiveIndex(idx);
     setZoomOpen(true);
   };
+  const PlaceholderImg = "/product-img-placeholder.svg";
+  const altText = images.length > 0 ? "Gambar produk" : PlaceholderImg;
 
   return (
     <div className="w-full">
@@ -46,8 +48,8 @@ const Gallery: React.FC<GalleryProps> = ({ images }) => {
                 onClick={() => handleZoomClick(idx)}
               >
                 <Image
-                  src={image.url}
-                  alt={"Gambar produk"}
+                  src={image.url || PlaceholderImg}
+                  alt={altText as string}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover object-center"
@@ -84,8 +86,8 @@ const Gallery: React.FC<GalleryProps> = ({ images }) => {
           {images.map((image) => (
             <SwiperSlide key={image.id} className="!w-20 !h-20 cursor-pointer">
               <Image
-                src={image.url}
-                alt={"Thumbnail"}
+                src={image.url || PlaceholderImg}
+                alt={altText as string}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover object-center rounded-md border"
