@@ -88,12 +88,6 @@ const ProductCard: React.FC<ProductCardProps> = ({data, isInitialFavorite, userR
                 </span>
                 
             </div>
-            <div className="ml-auto" onClick={handleFavoriteClick}>
-                <FavoriteButton
-                productId={data.id}
-                isInitialFavorite={isInitialFavorite}
-                userRole={userRole as "USER" || "ADMIN" || "GUEST"}/>
-                </div>
         </div>
     )
 }
