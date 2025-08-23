@@ -12,8 +12,8 @@ import { Separator } from "@radix-ui/react-select";
 import { getServerSession } from "next-auth";
 import { Suspense } from "react";
 
-// Tentukan revalidasi di level page
 export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const categories = await getCategory();
