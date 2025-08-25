@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { z } from 'zod';
 import slugify from 'slugify';
+import { Prisma } from '@prisma/client';
 const categorySchema = z.object({
   name: z.string().min(3, { message: 'Nama kategori minimal 3 karakter.' }),
 });
@@ -60,12 +61,30 @@ export async function DELETE(req: Request) {
     await prisma.category.delete({
       where: {
         id: categoryId,
-      },
+      }
     });
 
     return NextResponse.json({ message: 'Kategori berhasil dihapus.' }, { status: 200 });
+
   } catch (error) {
-    console.error('[CATEGORIES_DELETE]', error);
-    return NextResponse.json({ message: 'Terjadi kesalahan server.' }, { status: 500 });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      
+      if (error.code === "P2003") {
+        return NextResponse.json(
+          { message: "Tidak bisa menghapus kategori karena masih ada produk terkait." },
+          { status: 400 }
+        );
+      }
+
+      // Data tidak ditemukan
+      if (error.code === "P2025") {
+        return NextResponse.json(
+          { message: "Kategori tidak ditemukan atau sudah dihapus." },
+          { status: 404 }
+        );
+      }
+    }
+
+    return NextResponse.json({ message: "Terjadi kesalahan server." }, { status: 500 });
   }
 }

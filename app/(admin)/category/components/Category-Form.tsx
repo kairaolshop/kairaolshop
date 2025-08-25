@@ -2,7 +2,6 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
@@ -28,7 +27,6 @@ interface Category {
 }
 
 export default function KelolaCategory() {
-  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -102,7 +100,7 @@ export default function KelolaCategory() {
 
       toast.success('Kategori berhasil dihapus!');
       fetchCategories(); // Perbarui daftar setelah penghapusan
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
