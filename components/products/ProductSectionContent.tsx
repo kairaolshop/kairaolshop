@@ -15,7 +15,7 @@ export default async function ProductSectionContent({ currentProductSlug }: Prod
   // ambil data secara paralel biar lebih cepat
   const [categories, initialProducts] = await Promise.all([
     getCategory(),
-    getProducts({ excludeSlug: currentProductSlug, limit: 4 }),
+    getProducts({ excludeSlug: currentProductSlug, limit: 8 }),
   ]);
 
   return (
