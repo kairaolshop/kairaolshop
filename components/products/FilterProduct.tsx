@@ -21,7 +21,7 @@ interface FilteredProductDisplayProps {
   excludeSlug?: string;
 }
 
-const INITIAL_LIMIT = 4;
+const INITIAL_LIMIT = 8;
 
 export default function FilteredProductDisplay({
   initialProducts,
