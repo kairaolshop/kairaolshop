@@ -3,15 +3,16 @@
 import { ProductImage } from "@/lib/actions/product";
 import { cn } from "@/lib/utils";
 import { Tab } from "@headlessui/react";
-import Image from "next/image";
+import Image, { ImageProps } from "next/image";
 
 interface GalleryTabProps {
   images: ProductImage;
-  isFirstImage: boolean; // Tambahkan prop ini
+  isFirstImage: boolean;
+  imgProps?: Omit<ImageProps, "src" | "layout" | "placeholder" | "blurDataURL">
 }
 
 
-const GalleryTab: React.FC<GalleryTabProps> = ({ images, isFirstImage }) => {
+const GalleryTab: React.FC<GalleryTabProps> = ({ images, isFirstImage, imgProps }) => {
   const PlaceholderImg = "/product-img-placeholder.svg";
   const altText = images.url ? "Thumbnail produk" : PlaceholderImg;
   return (
@@ -27,6 +28,7 @@ const GalleryTab: React.FC<GalleryTabProps> = ({ images, isFirstImage }) => {
               sizes="(max-width: 640px) 90px, 110px"
               className="object-cover"
               priority={isFirstImage}
+              {...imgProps}
             />
           </span>
           <span
