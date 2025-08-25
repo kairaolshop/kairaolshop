@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Category } from '@prisma/client';
-import { ImagePlus, Loader2, Trash, Trash2 } from 'lucide-react';
+import { ImagePlus, Loader2, Trash, Trash2,} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -32,10 +32,25 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { uploadImageToCloudinary, UploadedImage } from '@/lib/utils/cloudynary';
-import Image from 'next/image';
 import { TransformedProduct } from '@/types/product';
 import { formSchema, ProductFormValues } from '@/components/validation/productSchema';
 import { ConfirmModal } from './ConfirmModal';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableImage } from './SortableImage';
 
 interface ProductFormProps {
   initialData: TransformedProduct | null;
@@ -47,6 +62,7 @@ interface ImagePreview {
   url: string;
   publicId?: string;
   file?: File;
+  order?: number;
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({ initialData, categories }) => {
@@ -57,10 +73,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, categorie
   const [loading, setLoading] = useState(false);
   
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>(
-    initialData?.images?.map((img) => ({
+    initialData?.images?.map((img, index) => ({
       id: img.publicId, 
       url: img.url,
       publicId: img.publicId,
+      order:index,
     })) || []
   );
 
@@ -102,14 +119,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, categorie
     };
   }, [imagePreviews]);
 
- const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ const handleFileChange =useCallback ((e: React.ChangeEvent<HTMLInputElement>) => {
   if (!e.target.files) return;
 
   const files = Array.from(e.target.files);
-  const newPreviews = files.map((file) => ({
+  const newPreviews = files.map((file, index) => ({
     id: `temp-${Date.now()}-${Math.random()}`,
     url: URL.createObjectURL(file),
     file,
+    order: imagePreviews.length + index,
   }));
 
   const currentPreviews = imagePreviews;
@@ -118,12 +136,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, categorie
 
   const updatedImagesForForm = updatedPreviews.map(p => ({
     url: p.url,
-    publicId: p.id
+    publicId: p.id,
+    order: p.order,
   })); 
 
   form.setValue('images', updatedImagesForForm, { shouldDirty: true, shouldValidate: true });
-};
-const removeImage = (id: string) => {
+},[form, imagePreviews]);
+
+
+const removeImage =useCallback((id: string) => {
   const removedImage = imagePreviews.find((img) => img.id === id);
   if (removedImage?.url.startsWith('blob:')) {
     URL.revokeObjectURL(removedImage.url);
@@ -142,7 +163,37 @@ const removeImage = (id: string) => {
   }));
   
   form.setValue('images', updatedImagesForForm, { shouldDirty: true, shouldValidate: true });
-};
+},[imagePreviews, form]);
+
+const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      setImagePreviews((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over?.id);
+        return arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+          ...item,
+          order: index,
+        }));
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const updatedImagesForForm = imagePreviews.map((p) => ({
+      url: p.url,
+      publicId: p.publicId || p.id,
+      order: p.order,
+    }));
+    form.setValue('images', updatedImagesForForm, { shouldDirty: true, shouldValidate: true });
+  }, [imagePreviews, form]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
 const onSubmit = async (data: ProductFormValues) => {
   try {
@@ -161,6 +212,7 @@ const onSubmit = async (data: ProductFormValues) => {
         id: img.publicId,
         url: img.url,
         publicId: img.publicId,
+        order: existingImages.length + index,
       })),
     ];
     setImagePreviews(updatedPreviews);
@@ -170,22 +222,29 @@ const onSubmit = async (data: ProductFormValues) => {
       ...uploadedImages,
     ];
 
-    const payload = { ...data, images: finalImages, deletedImagePublicIds };
-    if (initialData) {
-      await axios.patch(`/api/products/${params.productId}`, payload);
-    } else {
-      await axios.post(`/api/products`, payload);
+     const payload = {
+        ...data,
+        images: finalImages.map((img, index) => ({
+          ...img,
+          order: index,
+        })),
+        deletedImagePublicIds,
+      };
+      if (initialData) {
+        await axios.patch(`/api/products/${params.productId}`, payload);
+      } else {
+        await axios.post(`/api/products`, payload);
+      }
+      router.refresh();
+      router.push(`/dashboard`);
+      toast.success(toastMessage);
+    } catch (error) {
+      console.error(error);
+      toast.error('Cek kembali data yang diinput');
+    } finally {
+      setLoading(false);
     }
-    router.refresh();
-    router.push(`/dashboard`);
-    toast.success(toastMessage);
-  } catch (error) {
-    console.error(error);
-    toast.error('Cek kembali data yang diinput');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const onDelete = async () => {
     try {
@@ -231,10 +290,11 @@ const onSubmit = async (data: ProductFormValues) => {
       }
     });
     setImagePreviews(
-      initialData?.images?.map((img) => ({
+      initialData?.images?.map((img, index) => ({
         id: img.publicId,
         url: img.url,
         publicId: img.publicId,
+        order:index,
       })) || []
     );
     
@@ -262,7 +322,7 @@ const onSubmit = async (data: ProductFormValues) => {
             size="sm"
             onClick={() => setOpen(true)}
           >
-            <Trash className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         )}
       </div>
@@ -290,33 +350,27 @@ const onSubmit = async (data: ProductFormValues) => {
                       onChange={handleFileChange}
                     />
                     </div>
-                    <div className="flex gap-2 flex-wrap">
-                      {imagePreviews.map((img) => (
-                        <div key={img.id} className="relative">
-                          <Image
-                            src={img.url}
-                            alt={`Preview ${img.id}`}
-                            className="w-30 h-30 object-cover rounded"
-                            width={96}
-                            height={96}
-                          />
-                          <button
-                            type="button"
-                            className="absolute top-0 right-0 bg-red-500 text-white text-xs px-1 rounded"
-                            onClick={() => removeImage(img.id)}
-                            disabled={loading}
-                          >
-                           <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                        <SortableContext items={imagePreviews.map((img) => img.id)} strategy={verticalListSortingStrategy}>
+                          <div className="flex gap-2 flex-wrap">
+                            {imagePreviews.map((img) => (
+                              <SortableImage
+                                key={img.id}
+                                id={img.id}
+                                url={img.url}
+                                onRemove={() => removeImage(img.id)}
+                                disabled={loading}
+                              />
+                            ))}
+                          </div>
+                        </SortableContext>
+                      </DndContext>
                     </div>
-                  </div>
-                </FormControl>                
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           <div className="flex flex-col justify-between space-y-8">
             <FormField
               control={form.control}

@@ -4,6 +4,12 @@ import prisma from '@/lib/prisma';
 import  cloudinary from '@/lib/cloudinary';
 import slugify from 'slugify';
 
+interface ImageData{
+  url: string;
+  publicId: string;
+  order?: number;
+}
+
 interface Context {
   params:Promise< { productId: string }>;
 }
@@ -93,13 +99,18 @@ export async function PATCH(req: Request, { params }: Context)  {
               in: deletedImagePublicIds
             }
           },
-         create: imagesToCreate.map((img:{url:string; publicId:string}, index:number) => ({
-        url: img.url,
-        publicId: img.publicId,
-        order: index + imagesToKeep.length,
-      })),
-    },
-  },
+          create: imagesToCreate.map((img: ImageData, index: number) => ({
+            url: img.url,
+            publicId: img.publicId,
+            order: img.order !== undefined ? img.order : index + imagesToKeep.length, // [CHANGE] Gunakan order dari DND atau fallback ke indeks
+          })),
+          // [CHANGE] Update order untuk gambar yang tetap berdasarkan posisi di images
+          updateMany: imagesToKeep.map((img: ImageData) => ({
+            where: { publicId: img.publicId, productId },
+            data: { order: img.order !== undefined ? img.order : images.findIndex((i: ImageData) => i.publicId === img.publicId) },
+          })),
+        },
+      },
   include: {
     images: {
       select: { id: true, url: true, publicId: true, order: true },

@@ -8,6 +8,7 @@ import slugify from 'slugify';
  const productImageSchema = z.object({
   url: z.string().url("URL gambar tidak valid."),
   publicId: z.string().min(1, "Public ID diperlukan."),
+  order:z.number().int().optional(),
 });
 
 // Skema untuk validasi data POST dari frontend
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
             data: images.map((image, index) => ({
               url: image.url,
               publicId: image.publicId,
-              order: index + 1, // Atur urutan gambar
+              order: image.order !== undefined ? image.order: index,
             })),
           },
         },
