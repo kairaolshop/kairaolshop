@@ -1,19 +1,22 @@
-// app/api/reviews/[id]/images/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import cloudinary from '@/lib/cloudinary';
 
+// Update interface agar sesuai dengan folder structure
 interface Context {
-  params:Promise< { id: string }>
+  params: Promise<{ 
+    productId: string; 
+    reviewId: string; 
+  }>
 }
 
 export async function DELETE(req: Request, { params }: Context) {
-  const { id } =await params;
+  // Ambil reviewId dari params
+  const { reviewId } = await params; 
+  
   try {
-    
-    
     const review = await prisma.review.findUnique({
-      where: { id },
+      where: { id: reviewId }, // Gunakan reviewId di sini
       include: { images: true },
     });
 
@@ -30,7 +33,7 @@ export async function DELETE(req: Request, { params }: Context) {
 
     // Hapus entri gambar dari database
     await prisma.reviewImage.deleteMany({
-      where: { reviewId: id },
+      where: { reviewId: reviewId },
     });
 
     return NextResponse.json({ message: 'All review images deleted successfully.' });
